@@ -2,16 +2,12 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
-app.use(cors()); // Esto permite todas las conexiones externas
-
-// server.js
-const express = require('express');
-const app = express();
 const port = process.env.PORT || 3000;
 
-let endTime = Date.now() + (4 * 60 * 60 * 1000); // 4 horas por defecto
-
+app.use(cors());
 app.use(express.json());
+
+let endTime = Date.now() + (4 * 60 * 60 * 1000); // 4 horas por defecto
 
 // Evento de Follow (5 minutos)
 app.post('/follow', (req, res) => {

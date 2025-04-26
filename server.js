@@ -1,3 +1,9 @@
+const express = require('express');
+const cors = require('cors');
+
+const app = express();
+app.use(cors()); // Esto permite todas las conexiones externas
+
 // server.js
 const express = require('express');
 const app = express();

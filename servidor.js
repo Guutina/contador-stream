@@ -1,59 +1,49 @@
+// server.js
 const express = require('express');
-const fs = require('fs');
-const cors = require('cors');
-
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
-app.use(cors());
+let endTime = Date.now() + (4 * 60 * 60 * 1000); // 4 horas por defecto
+
 app.use(express.json());
 
-const FILE_PATH = 'timer.json';
-const BASE_HOURS = 4;
+// Evento de Follow (5 minutos)
+app.post('/follow', (req, res) => {
+  const additionalTime = 5 * 60 * 1000; // 5 minutos
+  endTime += additionalTime;
+  console.log(`Follow recibido. Se han añadido 5 minutos. Fin estimado: ${new Date(endTime)}`);
+  res.send({ success: true, newEndTime: endTime });
+});
 
-function loadTimer() {
-    if (fs.existsSync(FILE_PATH)) {
-        const data = fs.readFileSync(FILE_PATH);
-        return JSON.parse(data);
-    } else {
-        const now = Date.now();
-        const baseEndTime = now + BASE_HOURS * 60 * 60 * 1000;
-        const timer = { endTime: baseEndTime };
-        fs.writeFileSync(FILE_PATH, JSON.stringify(timer));
-        return timer;
-    }
-}
+// Evento de Sub (40 minutos)
+app.post('/sub', (req, res) => {
+  const additionalTime = 40 * 60 * 1000; // 40 minutos
+  endTime += additionalTime;
+  console.log(`Sub recibido. Se han añadido 40 minutos. Fin estimado: ${new Date(endTime)}`);
+  res.send({ success: true, newEndTime: endTime });
+});
 
-function saveTimer(timer) {
-    fs.writeFileSync(FILE_PATH, JSON.stringify(timer));
-}
+// Evento de Raid (15 minutos)
+app.post('/raid', (req, res) => {
+  const additionalTime = 15 * 60 * 1000; // 15 minutos
+  endTime += additionalTime;
+  console.log(`Raid recibido. Se han añadido 15 minutos. Fin estimado: ${new Date(endTime)}`);
+  res.send({ success: true, newEndTime: endTime });
+});
 
+// Evento de Donación (100 bits = 20 minutos)
+app.post('/donation', (req, res) => {
+  const additionalTime = 20 * 60 * 1000; // 20 minutos
+  endTime += additionalTime;
+  console.log(`Donación recibida. Se han añadido 20 minutos. Fin estimado: ${new Date(endTime)}`);
+  res.send({ success: true, newEndTime: endTime });
+});
+
+// Obtener tiempo restante
 app.get('/get', (req, res) => {
-    const timer = loadTimer();
-    res.json(timer);
+  res.json({ endTime: endTime });
 });
 
-app.post('/add', (req, res) => {
-    const { type, amount } = req.body;
-    const timer = loadTimer();
-    let minutesToAdd = 0;
-
-    if (type === 'bits') {
-        minutesToAdd = (amount / 100) * 20; // 100 bits = 20 minutos
-    } else if (type === 'sub') {
-        minutesToAdd = 40;
-    } else if (type === 'raid') {
-        minutesToAdd = 15;
-    } else if (type === 'follow') {
-        minutesToAdd = 5;
-    }
-
-    timer.endTime += minutesToAdd * 60 * 1000;
-    saveTimer(timer);
-
-    res.json({ success: true, newEndTime: timer.endTime });
-});
-
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en el puerto ${PORT}`);
+app.listen(port, () => {
+  console.log(`Servidor funcionando en el puerto ${port}`);
 });
